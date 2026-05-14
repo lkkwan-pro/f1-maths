@@ -18,143 +18,76 @@
             flex-direction: column; 
             align-items: center; 
             margin: 0; 
-            padding: 15px; 
+            padding: 10px; 
             touch-action: manipulation; 
         }
-        .header {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .header h2 {
-            color: var(--f1-red);
-            margin: 5px 0;
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            font-style: italic;
-        }
+        .header { text-align: center; margin-bottom: 5px; }
+        .header h2 { color: var(--f1-red); margin: 5px 0; font-size: 1.5rem; text-transform: uppercase; font-style: italic; }
+        
         .game-card { 
-            background: white; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-            width: 100%; 
-            max-width: 400px; 
-            overflow: hidden;
-            border: 4px solid var(--asphalt);
+            background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            width: 100%; max-width: 400px; overflow: hidden; border: 4px solid var(--asphalt);
         }
         .stats { 
-            display: flex; 
-            justify-content: space-around; 
-            background-color: var(--asphalt);
-            color: white;
-            padding: 10px;
-            font-size: 1.1rem; 
-            font-weight: bold; 
+            display: flex; justify-content: space-around; background-color: var(--asphalt);
+            color: white; padding: 10px; font-size: 1.1rem; font-weight: bold; 
         }
         
-        /* 賽道與車輛設計 */
+        /* 升級進度條顯示 */
+        .level-banner {
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            color: #000; text-align: center; padding: 8px; font-weight: bold;
+            font-size: 1.1rem; border-bottom: 2px solid #333;
+            transition: all 0.3s ease;
+        }
+
         .track-container {
-            background-color: #444;
-            padding: 20px 10px;
-            position: relative;
-            background-image: repeating-linear-gradient(
-                45deg,
-                var(--curb-red) 0,
-                var(--curb-red) 10px,
-                var(--curb-white) 10px,
-                var(--curb-white) 20px
-            );
-            background-size: 100% 15px;
-            background-repeat: no-repeat;
-            background-position: top;
+            background-color: #444; padding: 20px 5px; position: relative;
+            background-image: repeating-linear-gradient(45deg, var(--curb-red) 0, var(--curb-red) 10px, var(--curb-white) 10px, var(--curb-white) 20px);
+            background-size: 100% 15px; background-repeat: no-repeat; background-position: top;
         }
         .asphalt {
-            background-color: var(--asphalt);
-            border-radius: 10px;
-            padding: 20px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: white;
-            margin-top: 5px;
+            background-color: var(--asphalt); border-radius: 10px; padding: 10px 5px;
+            display: flex; align-items: center; justify-content: space-between; color: white; margin-top: 5px;
+            min-height: 140px; /* 預留空間給變大的車 */
         }
-        .car-box {
-            text-align: center;
-            width: 40%;
-        }
-        .car-emoji {
-            font-size: 3rem;
-            margin-bottom: 5px;
-            display: block;
-        }
-        .equation {
-            background: black;
-            color: #00FF00; /* 電腦儀表板綠色 */
-            font-family: 'Courier New', Courier, monospace;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            border: 2px solid #555;
-        }
-        .equals-sign {
-            font-size: 2rem;
-            font-weight: bold;
-            color: white;
-        }
-        .question-mark {
-            color: #FFEB3B;
-            animation: blink 1s infinite alternate;
-        }
-
-        @keyframes blink {
-            from { opacity: 1; }
-            to { opacity: 0.3; }
-        }
-
-        /* 儀表板選項 */
-        .dashboard {
-            padding: 20px;
-            background: #fff;
-        }
-        .instruction {
-            text-align: center;
-            color: #555;
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-        .options-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-        }
-        .option-btn { 
-            background: var(--f1-red); 
-            color: white; 
-            border: none; 
-            padding: 15px; 
-            font-size: 1.6rem; 
-            font-weight: bold; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            box-shadow: 0 5px #9b0000; 
-            transition: all 0.1s; 
-            font-family: 'Courier New', Courier, monospace;
-        }
-        .option-btn:active { 
-            transform: translateY(4px); 
-            box-shadow: 0 1px #9b0000; 
-        }
+        .car-box { text-align: center; width: 45%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
         
-        #feedback { 
-            margin-top: 15px; 
-            font-size: 1.3rem; 
-            font-weight: bold; 
-            text-align: center;
-            height: 1.5em; 
+        /* 戰車進化 CSS */
+        .car-emoji { display: block; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 10px; }
+        .car-lv1 { font-size: 2.2rem; filter: drop-shadow(0 0 2px rgba(255,255,255,0.3)); }
+        .car-lv2 { font-size: 2.8rem; filter: drop-shadow(0 0 8px #4ECDC4); transform: scale(1.1); }
+        .car-lv3 { font-size: 3.2rem; filter: drop-shadow(0 0 15px #FF6B6B); transform: scale(1.2); }
+        .car-lv4 { font-size: 3.5rem; filter: drop-shadow(0 0 25px #FFD700); transform: scale(1.3); animation: champion-glow 1s infinite alternate; }
+        
+        @keyframes champion-glow {
+            from { filter: drop-shadow(0 0 15px #FFD700); transform: scale(1.3); }
+            to { filter: drop-shadow(0 0 30px #FFA500); transform: scale(1.35); }
         }
+
+        .equation {
+            background: black; color: #00FF00; font-family: 'Courier New', Courier, monospace;
+            padding: 8px; border-radius: 5px; font-size: 1.3rem; font-weight: bold; border: 2px solid #555; width: 80%;
+        }
+        .equals-sign { font-size: 2rem; font-weight: bold; color: white; margin: 0 5px; }
+        .question-mark { color: #FFEB3B; animation: blink 1s infinite alternate; }
+        @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
+
+        .dashboard { padding: 15px; background: #fff; }
+        .instruction { text-align: center; color: #555; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .option-btn { 
+            background: var(--f1-red); color: white; border: none; padding: 15px; 
+            font-size: 1.5rem; font-weight: bold; border-radius: 8px; cursor: pointer; 
+            box-shadow: 0 5px #9b0000; transition: all 0.1s; font-family: 'Courier New', Courier, monospace;
+        }
+        .option-btn:active { transform: translateY(4px); box-shadow: 0 1px #9b0000; }
+        
+        #feedback { margin-top: 15px; font-size: 1.3rem; font-weight: bold; text-align: center; height: 1.5em; }
         .correct { color: #4CAF50; }
         .wrong { color: var(--f1-red); }
+        .level-up-msg { color: #FF9800; animation: jump 0.5s ease; }
+        @keyframes jump { 0% { transform: translateY(0); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -164,6 +97,7 @@
     </div>
 
     <div class="game-card">
+        <div id="levelBanner" class="level-banner">級別 1: 新手卡丁車 (0 分)</div>
         <div class="stats">
             <span>積分: <span id="score">0</span></span>
             <span>連勝: <span id="streak">0</span></span>
@@ -172,13 +106,13 @@
         <div class="track-container">
             <div class="asphalt">
                 <div class="car-box">
-                    <span class="car-emoji">🏎️</span>
-                    <div class="equation" id="leftEq">10 + 5</div>
+                    <span class="car-emoji car-lv1" id="leftCar">🏎️</span>
+                    <div class="equation" id="leftEq">10+5</div>
                 </div>
                 <div class="equals-sign">＝</div>
                 <div class="car-box">
-                    <span class="car-emoji">🏎️</span>
-                    <div class="equation" id="rightEq">12 + <span class="question-mark">?</span></div>
+                    <span class="car-emoji car-lv1" id="rightCar">🏎️</span>
+                    <div class="equation" id="rightEq">12+<span class="question-mark">?</span></div>
                 </div>
             </div>
         </div>
@@ -194,14 +128,47 @@
         let score = 0;
         let streak = 0;
         let answer = 0;
+        let currentLevel = 1;
+
+        function updateCarVisuals() {
+            let newLevel = 1;
+            let carIcon = "🏎️";
+            let bannerText = `級別 1: 新手卡丁車 (尚欠 ${30 - score} 分升級)`;
+            let carClass = "car-lv1";
+
+            if (score >= 150) {
+                newLevel = 4; carIcon = "🏆🚀🏎️🚀🏆"; bannerText = "🔥 級別 4: 世界冠軍戰車! 🔥"; carClass = "car-lv4";
+            } else if (score >= 70) {
+                newLevel = 3; carIcon = "🔥🏎️🔥"; bannerText = `級別 3: F1 挑戰者 (尚欠 ${150 - score} 分升級)`; carClass = "car-lv3";
+            } else if (score >= 30) {
+                newLevel = 2; carIcon = "🏎️💨"; bannerText = `級別 2: F3 戰車 (尚欠 ${70 - score} 分升級)`; carClass = "car-lv2";
+            }
+
+            // 如果成功升級，觸發特效
+            if (newLevel > currentLevel) {
+                currentLevel = newLevel;
+                const fb = document.getElementById('feedback');
+                fb.innerText = "🌟 升級啦！解鎖新戰車！ 🌟";
+                fb.className = "level-up-msg";
+                document.getElementById('levelBanner').style.background = "linear-gradient(90deg, #00FF00, #32CD32)";
+                setTimeout(() => {
+                    document.getElementById('levelBanner').style.background = "linear-gradient(90deg, #FFD700, #FFA500)";
+                }, 1000);
+            }
+
+            document.getElementById('levelBanner').innerText = bannerText;
+            document.getElementById('leftCar').innerText = carIcon;
+            document.getElementById('rightCar').innerText = carIcon;
+            document.getElementById('leftCar').className = `car-emoji ${carClass}`;
+            document.getElementById('rightCar').className = `car-emoji ${carClass}`;
+        }
 
         function generateProblem() {
-            // 決定兩架戰車的目標馬力 (總和介乎 15 到 40 之間)
+            // 隨機生成題目
             let targetPower = Math.floor(Math.random() * 26) + 15; 
-            
-            // 生成左邊戰車的算式 (加法或減法)
             let leftOp = Math.random() > 0.5 ? '+' : '−';
             let leftN1, leftN2;
+            
             if (leftOp === '+') {
                 leftN1 = Math.floor(Math.random() * (targetPower - 1)) + 1;
                 leftN2 = targetPower - leftN1;
@@ -210,7 +177,6 @@
                 leftN2 = leftN1 - targetPower;
             }
 
-            // 生成右邊戰車的算式 (有一部分是未知數)
             let rightOp = Math.random() > 0.5 ? '+' : '−';
             let rightN1;
             
@@ -222,23 +188,22 @@
                 answer = rightN1 - targetPower;
             }
 
-            // 更新畫面
-            document.getElementById('leftEq').innerText = `${leftN1} ${leftOp} ${leftN2}`;
-            document.getElementById('rightEq').innerHTML = `${rightN1} ${rightOp} <span class="question-mark">?</span>`;
-            document.getElementById('feedback').innerText = "";
+            document.getElementById('leftEq').innerText = `${leftN1}${leftOp}${leftN2}`;
+            document.getElementById('rightEq').innerHTML = `${rightN1}${rightOp}<span class="question-mark">?</span>`;
+            
+            // 如果不是剛升級，清除回饋文字
+            if (document.getElementById('feedback').innerText.indexOf("升級") === -1) {
+                document.getElementById('feedback').innerText = "";
+            }
             
             makeOptions(answer);
         }
 
         function makeOptions(correct) {
             let choices = new Set([correct]);
-            
-            // 生成 3 個干擾選項
             while(choices.size < 4) {
                 let wrong = correct + (Math.floor(Math.random() * 9) + 1) * (Math.random() > 0.5 ? 1 : -1);
-                if (wrong >= 0 && !choices.has(wrong)) {
-                    choices.add(wrong);
-                }
+                if (wrong >= 0 && !choices.has(wrong)) choices.add(wrong);
             }
 
             let sortedChoices = Array.from(choices).sort(() => Math.random() - 0.5);
@@ -261,17 +226,22 @@
                 streak++;
                 fb.innerText = "Vroom! 馬力全開！🏎️💨"; 
                 fb.className = "correct";
+                updateCarVisuals(); // 每次答對檢查是否需要進化
                 setTimeout(generateProblem, 1200);
             } else {
                 streak = 0;
-                fb.innerText = "死火！計清楚啲！💥"; 
+                // 答錯扣分 (最少為0) 以增加挑戰性
+                score = Math.max(0, score - 5); 
+                fb.innerText = "死火！計清楚啲！💥 (-5分)"; 
                 fb.className = "wrong";
+                updateCarVisuals(); // 更新尚欠分數
             }
             document.getElementById('score').innerText = score;
             document.getElementById('streak').innerText = streak;
         }
 
-        // 啟動遊戲
+        // 初始化
+        updateCarVisuals();
         generateProblem();
     </script>
 </body>
