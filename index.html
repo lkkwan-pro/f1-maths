@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>F1 戰車動力平衡賽</title>
+    <style>
+        :root { 
+            --f1-red: #E10600; 
+            --asphalt: #2B2B2B;
+            --curb-red: #d32f2f;
+            --curb-white: #ffffff;
+        }
+        body { 
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; 
+            background-color: #f0f0f0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin: 0; 
+            padding: 15px; 
+            touch-action: manipulation; 
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .header h2 {
+            color: var(--f1-red);
+            margin: 5px 0;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+        .game-card { 
+            background: white; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            width: 100%; 
+            max-width: 400px; 
+            overflow: hidden;
+            border: 4px solid var(--asphalt);
+        }
+        .stats { 
+            display: flex; 
+            justify-content: space-around; 
+            background-color: var(--asphalt);
+            color: white;
+            padding: 10px;
+            font-size: 1.1rem; 
+            font-weight: bold; 
+        }
+        
+        /* 賽道與車輛設計 */
+        .track-container {
+            background-color: #444;
+            padding: 20px 10px;
+            position: relative;
+            background-image: repeating-linear-gradient(
+                45deg,
+                var(--curb-red) 0,
+                var(--curb-red) 10px,
+                var(--curb-white) 10px,
+                var(--curb-white) 20px
+            );
+            background-size: 100% 15px;
+            background-repeat: no-repeat;
+            background-position: top;
+        }
+        .asphalt {
+            background-color: var(--asphalt);
+            border-radius: 10px;
+            padding: 20px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            margin-top: 5px;
+        }
+        .car-box {
+            text-align: center;
+            width: 40%;
+        }
+        .car-emoji {
+            font-size: 3rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .equation {
+            background: black;
+            color: #00FF00; /* 電腦儀表板綠色 */
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border: 2px solid #555;
+        }
+        .equals-sign {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+        }
+        .question-mark {
+            color: #FFEB3B;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            from { opacity: 1; }
+            to { opacity: 0.3; }
+        }
+
+        /* 儀表板選項 */
+        .dashboard {
+            padding: 20px;
+            background: #fff;
+        }
+        .instruction {
+            text-align: center;
+            color: #555;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .options-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+        }
+        .option-btn { 
+            background: var(--f1-red); 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            font-size: 1.6rem; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            box-shadow: 0 5px #9b0000; 
+            transition: all 0.1s; 
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .option-btn:active { 
+            transform: translateY(4px); 
+            box-shadow: 0 1px #9b0000; 
+        }
+        
+        #feedback { 
+            margin-top: 15px; 
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            text-align: center;
+            height: 1.5em; 
+        }
+        .correct { color: #4CAF50; }
+        .wrong { color: var(--f1-red); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>🏁 F1 動力平衡賽 🏎️</h2>
+    </div>
+
+    <div class="game-card">
+        <div class="stats">
+            <span>積分: <span id="score">0</span></span>
+            <span>連勝: <span id="streak">0</span></span>
+        </div>
+        
+        <div class="track-container">
+            <div class="asphalt">
+                <div class="car-box">
+                    <span class="car-emoji">🏎️</span>
+                    <div class="equation" id="leftEq">10 + 5</div>
+                </div>
+                <div class="equals-sign">＝</div>
+                <div class="car-box">
+                    <span class="car-emoji">🏎️</span>
+                    <div class="equation" id="rightEq">12 + <span class="question-mark">?</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="instruction">調校右邊戰車，令兩邊馬力相等！</div>
+            <div class="options-grid" id="options"></div>
+            <div id="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let streak = 0;
+        let answer = 0;
+
+        function generateProblem() {
+            // 決定兩架戰車的目標馬力 (總和介乎 15 到 40 之間)
+            let targetPower = Math.floor(Math.random() * 26) + 15; 
+            
+            // 生成左邊戰車的算式 (加法或減法)
+            let leftOp = Math.random() > 0.5 ? '+' : '−';
+            let leftN1, leftN2;
+            if (leftOp === '+') {
+                leftN1 = Math.floor(Math.random() * (targetPower - 1)) + 1;
+                leftN2 = targetPower - leftN1;
+            } else {
+                leftN1 = targetPower + Math.floor(Math.random() * 20) + 1;
+                leftN2 = leftN1 - targetPower;
+            }
+
+            // 生成右邊戰車的算式 (有一部分是未知數)
+            let rightOp = Math.random() > 0.5 ? '+' : '−';
+            let rightN1;
+            
+            if (rightOp === '+') {
+                rightN1 = Math.floor(Math.random() * (targetPower - 1)) + 1;
+                answer = targetPower - rightN1;
+            } else {
+                rightN1 = targetPower + Math.floor(Math.random() * 20) + 1;
+                answer = rightN1 - targetPower;
+            }
+
+            // 更新畫面
+            document.getElementById('leftEq').innerText = `${leftN1} ${leftOp} ${leftN2}`;
+            document.getElementById('rightEq').innerHTML = `${rightN1} ${rightOp} <span class="question-mark">?</span>`;
+            document.getElementById('feedback').innerText = "";
+            
+            makeOptions(answer);
+        }
+
+        function makeOptions(correct) {
+            let choices = new Set([correct]);
+            
+            // 生成 3 個干擾選項
+            while(choices.size < 4) {
+                let wrong = correct + (Math.floor(Math.random() * 9) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                if (wrong >= 0 && !choices.has(wrong)) {
+                    choices.add(wrong);
+                }
+            }
+
+            let sortedChoices = Array.from(choices).sort(() => Math.random() - 0.5);
+            const grid = document.getElementById('options');
+            grid.innerHTML = "";
+            
+            sortedChoices.forEach(val => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = val;
+                btn.onclick = () => check(val);
+                grid.appendChild(btn);
+            });
+        }
+
+        function check(val) {
+            const fb = document.getElementById('feedback');
+            if (val === answer) {
+                score += 10; 
+                streak++;
+                fb.innerText = "Vroom! 馬力全開！🏎️💨"; 
+                fb.className = "correct";
+                setTimeout(generateProblem, 1200);
+            } else {
+                streak = 0;
+                fb.innerText = "死火！計清楚啲！💥"; 
+                fb.className = "wrong";
+            }
+            document.getElementById('score').innerText = score;
+            document.getElementById('streak').innerText = streak;
+        }
+
+        // 啟動遊戲
+        generateProblem();
+    </script>
+</body>
+</html>
